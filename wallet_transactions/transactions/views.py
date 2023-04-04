@@ -1,9 +1,12 @@
-from django_filters.rest_framework import DjangoFilterBackend
+from django.db.models import Q
 
 from rest_framework import generics
+from rest_framework.response import Response
+from rest_framework.decorators import api_view
 
 from .models import Transaction
 from .serialisers import TransactionSerializer
+
 
 # Create your views here.
 
@@ -11,18 +14,19 @@ from .serialisers import TransactionSerializer
 class TransactionListAPIView(generics.ListAPIView):
     queryset = Transaction.objects.all()
     serializer_class = TransactionSerializer
-    filter_backends = [DjangoFilterBackend]
-    filterset_fields = ["sender__name", "receiver__name"]
-
-    # def get_queryset(self):
-    #     serializer = TransactionSerializer(data=self.request.data)
-    #     if serializer.is_valid():
-    #         print(Response(serializer.data))
-    #     print(Response(serializer.data))
-
-    #     return super().get_queryset()
 
 
 class TransactionDetailAPIView(generics.RetrieveAPIView):
     queryset = Transaction.objects.all()
     serializer_class = TransactionSerializer
+
+
+@api_view(("GET",))
+def transaction_list(request, name_of_wallet):
+    transaction = Transaction.objects.filter(
+        Q(sender__name=name_of_wallet) | Q(receiver__name=name_of_wallet)
+    )
+    serializer = TransactionSerializer(transaction, many=True)
+    if not transaction:
+        return Response({"error": "transaction does not exist"})
+    return Response(serializer.data)
