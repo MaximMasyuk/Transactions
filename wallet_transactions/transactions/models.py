@@ -6,8 +6,10 @@ from wallets.models import Wallet
 
 
 class Transaction(models.Model):
-    sender = models.ForeignKey(Wallet, on_delete=models.CASCADE)
-    receiver = models.ForeignKey(Wallet, on_delete=models.CASCADE)
+    sender = models.ForeignKey(Wallet, on_delete=models.CASCADE, related_name="sender")
+    receiver = models.ForeignKey(
+        Wallet, on_delete=models.CASCADE, related_name="receiver"
+    )
     transfer_amount = models.FloatField()
     commission = models.FloatField()
     status = models.CharField(max_length=25)

@@ -52,4 +52,11 @@ class WalletDestroyAPIView(generics.DestroyAPIView):
 
 @api_view(["GET"])
 def api_root(request, format=None):
-    return Response({"wallets": reverse("wallet-list", request=request, format=format)})
+    return Response(
+        {
+            "wallets": reverse("wallet-list", request=request, format=format),
+            "transactions": reverse(
+                "transactions-list", request=request, format=format
+            ),
+        },
+    )
