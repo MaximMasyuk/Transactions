@@ -10,6 +10,8 @@ from .permissions import IsOwner
 
 # Create your views here.
 
+COUNTOFWALLETYOUCANCREAT = 5
+
 
 class WalletListAPIView(generics.ListAPIView):
     queryset = Wallet.objects.all()
@@ -20,6 +22,15 @@ class WalletListAPIView(generics.ListAPIView):
 class WalletCreateAPIView(generics.CreateAPIView):
     queryset = Wallet.objects.all()
     serializer_class = WalletSerializer
+
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        count_wallet = Wallet.objects.filter(owner__username=user).count()
+
+        if count_wallet >= COUNTOFWALLETYOUCANCREAT:
+            return Response({"error": "You cannot create more than 5 wallets"})
+
+        return super().post(request, *args, **kwargs)
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
