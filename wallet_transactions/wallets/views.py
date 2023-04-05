@@ -3,20 +3,12 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 
-from .models import Wallet
+from .models import Wallet, COUNTOFWALLETYOUCANCREAT
 from .serializers import WalletSerializer
 from .permissions import IsOwner
 
 
 # Create your views here.
-
-COUNTOFWALLETYOUCANCREAT = 5
-
-
-class WalletListAPIView(generics.ListAPIView):
-    queryset = Wallet.objects.all()
-    serializer_class = WalletSerializer
-    permission_classes = (IsOwner,)
 
 
 class WalletCreateAPIView(generics.CreateAPIView):
@@ -48,6 +40,13 @@ class WalletDestroyAPIView(generics.DestroyAPIView):
     serializer_class = WalletSerializer
     lookup_field = "name"
     permission_classes = (IsOwner,)
+
+
+@api_view(("GET",))
+def wallet_list(request):
+    wallet = Wallet.objects.filter(owner__username=request.user)
+    serializer = WalletSerializer(wallet, many=True)
+    return Response(serializer.data)
 
 
 @api_view(["GET"])

@@ -9,17 +9,15 @@ import string
 from .list_for_model import TYPEOFWALLET, CURRENCYS
 
 User = settings.AUTH_USER_MODEL
-
-
-# Create your models here.
+COUNTOFWALLETYOUCANCREAT = 5
 
 
 class Wallet(models.Model):
-    name = models.CharField(blank=True, null=True)
+    name = models.CharField(blank=True, null=True, editable=False)
     type_of_wallet = models.CharField(choices=TYPEOFWALLET, max_length=15)
     currency = models.CharField(choices=CURRENCYS, max_length=4)
     balance = models.DecimalField(
-        null=True, blank=True, max_digits=10, decimal_places=2
+        null=True, blank=True, max_digits=10, decimal_places=2, editable=False
     )
     owner = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE)
     created_on = models.DateTimeField(auto_now_add=True)
