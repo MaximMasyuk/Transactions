@@ -9,9 +9,6 @@ from .serialisers import TransactionSerializer
 from .permission import IsOwnerTransaction
 
 
-# Create your views here.
-
-
 class TransactionDetailAPIView(generics.RetrieveAPIView):
     """Create view with detail for certain Transaction"""
 

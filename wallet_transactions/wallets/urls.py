@@ -2,17 +2,15 @@ from django.urls import path
 
 from .views import (
     wallet_list,
-    WalletCreateAPIView,
-    WalletDetailAPIView,
-    WalletDestroyAPIView,
+    wallet_detail_delete,
     api_root,
+    wallet_create,
 )
 
 
 urlpatterns = [
     path("", api_root),
     path("list/", wallet_list, name="wallet_list"),
-    path("create/", WalletCreateAPIView.as_view(), name="wallet_create"),
-    path("<str:name>/", WalletDetailAPIView.as_view(), name="wallet_detail"),
-    path("delete/<str:name>/", WalletDestroyAPIView.as_view(), name="wallet_delete"),
+    path("create/", wallet_create, name="wallet_create"),
+    path("<str:name_of_wallet>/", wallet_detail_delete, name="wallet_detail_delete"),
 ]

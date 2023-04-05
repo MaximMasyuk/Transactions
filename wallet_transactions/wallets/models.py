@@ -10,12 +10,14 @@ from .list_for_model import TYPEOFWALLET, CURRENCYS
 
 User = settings.AUTH_USER_MODEL
 COUNTOFWALLETYOUCANCREAT = 5
+FORNEWWALLETRUB100 = 100
+FORNEWWALLETUSDEUR3 = 3
 
 
 class Wallet(models.Model):
     """Describe table Wallet"""
 
-    name = models.CharField(blank=True, null=True, editable=False)
+    name = models.CharField(blank=True, null=True, editable=False, unique=True)
     type_of_wallet = models.CharField(choices=TYPEOFWALLET, max_length=15)
     currency = models.CharField(choices=CURRENCYS, max_length=4)
     balance = models.DecimalField(
@@ -35,9 +37,9 @@ def add_balance_wallet(sender, instance, *args, **kwargs):
     and add the balance for new user"""
     if not instance.balance:
         if instance.currency == "RUB":
-            instance.balance = 100.0
+            instance.balance = FORNEWWALLETRUB100
         else:
-            instance.balance = 3.0
+            instance.balance = FORNEWWALLETUSDEUR3
 
 
 @receiver(pre_save, sender=Wallet)
