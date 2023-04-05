@@ -18,7 +18,9 @@ class Wallet(models.Model):
     name = models.CharField(blank=True, null=True)
     type_of_wallet = models.CharField(choices=TYPEOFWALLET, max_length=15)
     currency = models.CharField(choices=CURRENCYS, max_length=4)
-    balance = models.FloatField(blank=True, null=True)
+    balance = models.DecimalField(
+        null=True, blank=True, max_digits=10, decimal_places=2
+    )
     owner = models.ForeignKey(User, null=True, blank=True, on_delete=models.CASCADE)
     created_on = models.DateTimeField(auto_now_add=True)
     modified_on = models.DateTimeField(auto_now=True)
@@ -34,7 +36,6 @@ def add_balance_wallet(sender, instance, *args, **kwargs):
             instance.balance = 100.0
         else:
             instance.balance = 3.0
-    instance.balance = round(instance.balance, 2)
 
 
 @receiver(pre_save, sender=Wallet)
