@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "wallets",
     "transactions",
-    "django_filters",
+    "userapi",
 ]
 
 MIDDLEWARE = [
