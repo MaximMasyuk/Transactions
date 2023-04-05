@@ -1,20 +1,28 @@
 from django.db.models import Q
 
-from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 
 from .models import Transaction
 from .serialisers import TransactionSerializer
-from .permission import IsOwnerTransaction
 
 
-class TransactionDetailAPIView(generics.RetrieveAPIView):
-    """Create view with detail for certain Transaction"""
+@api_view(("GET", "DELETE"))
+def transaction_detail_delete(request, pk: int):
+    """Create view list for all transaction whose transaction pk is pk"""
 
-    queryset = Transaction.objects.all()
-    serializer_class = TransactionSerializer
-    permission_classes = (IsOwnerTransaction,)
+    try:
+        transaction = Transaction.objects.filter(
+            Q(sender__owner=request.user.id) | Q(receiver__owner=request.user.id)
+        ).get(pk=pk)
+    except Transaction.DoesNotExist:
+        return Response({"error": "transaction does not exist"})
+    if request.method == "GET":
+        serializer = TransactionSerializer(transaction)
+        return Response(serializer.data)
+    elif request.method == "DELETE":
+        transaction.delete()
+        return Response({"error": "transaction does not exist"})
 
 
 @api_view(("GET",))
