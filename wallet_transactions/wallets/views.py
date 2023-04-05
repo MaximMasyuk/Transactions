@@ -20,7 +20,7 @@ def wallet_list(request):
     return Response(serializer.data)
 
 
-@api_view(["GET"])
+@api_view(["POST"])
 def wallet_create(request):
     """Create view creale for Wallet"""
     global CHECK, name
