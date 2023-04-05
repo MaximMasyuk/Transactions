@@ -12,12 +12,6 @@ from .permission import IsOwnerTransaction
 # Create your views here.
 
 
-class TransactionListAPIView(generics.ListAPIView):
-    queryset = Transaction.objects.all()
-    serializer_class = TransactionSerializer
-    permission_classes = (IsOwnerTransaction,)
-
-
 class TransactionDetailAPIView(generics.RetrieveAPIView):
     queryset = Transaction.objects.all()
     serializer_class = TransactionSerializer
@@ -25,12 +19,21 @@ class TransactionDetailAPIView(generics.RetrieveAPIView):
 
 
 @api_view(("GET",))
-def transaction_list(request, name_of_wallet: str):
-    print(request.user.id)
+def transaction_list(request):
+    transaction = Transaction.objects.filter(
+        Q(sender__owner=request.user.id) | Q(receiver__owner=request.user.id)
+    )
+    serializer = TransactionSerializer(transaction, many=True)
+    if not transaction:
+        return Response({"error": "transaction does not exist"})
+    return Response(serializer.data)
+
+
+@api_view(("GET",))
+def transaction_list_for_name(request, name_of_wallet: str):
     transaction = Transaction.objects.filter(
         Q(sender__owner=request.user.id) | Q(receiver__owner=request.user.id)
     ).filter(Q(sender__name=name_of_wallet) | Q(receiver__name=name_of_wallet))
-    print(request)
     serializer = TransactionSerializer(transaction, many=True)
     if not transaction:
         return Response({"error": "transaction does not exist"})
