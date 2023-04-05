@@ -53,9 +53,9 @@ def wallet_list(request):
 def api_root(request, format=None):
     return Response(
         {
-            "wallets": reverse("wallet-list", request=request, format=format),
+            "wallets": reverse("wallet_list", request=request, format=format),
             "transactions": reverse(
-                "transactions-list", request=request, format=format
+                "transactions_list", request=request, format=format
             ),
         },
     )

@@ -8,7 +8,7 @@ from .views import (
 
 
 urlpatterns = [
-    path("", transaction_list, name="transactions-list"),
-    path("<int:pk>/", TransactionDetailAPIView.as_view(), name="transactions-detail"),
+    path("", transaction_list, name="transactions_list"),
+    path("<int:pk>/", TransactionDetailAPIView.as_view(), name="transactions_detail"),
     path("<str:name_of_wallet>/", transaction_list_for_name),
 ]
