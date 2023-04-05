@@ -3,8 +3,6 @@ from django.dispatch import receiver
 from django.db.models.signals import pre_save
 from django.conf import settings
 
-import random
-import string
 
 from .list_for_model import TYPEOFWALLET, CURRENCYS
 
@@ -40,11 +38,3 @@ def add_balance_wallet(sender, instance, *args, **kwargs):
             instance.balance = FORNEWWALLETRUB100
         else:
             instance.balance = FORNEWWALLETUSDEUR3
-
-
-@receiver(pre_save, sender=Wallet)
-def add_name_wallet(sender, instance, *args, **kwargs):
-    """Pre-save method when wallet is created add name of wallet"""
-    if not instance.name:
-        name = [random.choice(string.ascii_uppercase + string.digits) for i in range(8)]
-        instance.name = "".join(name)

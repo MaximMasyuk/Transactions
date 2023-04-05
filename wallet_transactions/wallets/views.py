@@ -1,4 +1,3 @@
-from rest_framework import generics
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
@@ -6,19 +5,11 @@ from rest_framework import status
 
 from .models import Wallet, COUNTOFWALLETYOUCANCREAT
 from .serializers import WalletSerializer
-from .permissions import IsOwner
 
+import random
+import string
 
-# Create your views here.
-
-
-class WalletDestroyAPIView(generics.DestroyAPIView):
-    """Create view wich destroy certain Wallet"""
-
-    queryset = Wallet.objects.all()
-    serializer_class = WalletSerializer
-    lookup_field = "name"
-    permission_classes = (IsOwner,)
+CHECK = True
 
 
 @api_view(("GET",))
@@ -32,14 +23,20 @@ def wallet_list(request):
 @api_view(["GET", "POST"])
 def wallet_create(request):
     """Create view creale for Wallet"""
-
+    global CHECK, name
     serializer = WalletSerializer(data=request.data)
     user = request.user
+    while CHECK:
+        name = [random.choice(string.ascii_uppercase + string.digits) for i in range(8)]
+        check_name = Wallet.objects.filter(name=name).count()
+        if check_name == 0:
+            CHECK = False
+
     count_wallet = Wallet.objects.filter(owner__username=user).count()
     if count_wallet >= COUNTOFWALLETYOUCANCREAT:
         return Response({"error": "You cannot create more than 5 wallets"})
     if serializer.is_valid():
-        serializer.save(owner=request.user)
+        serializer.save(owner=request.user, name="".join(name))
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
