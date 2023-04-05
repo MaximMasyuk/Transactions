@@ -4,6 +4,8 @@ from django.contrib.auth.models import User
 
 
 class RegisterSerializer(serializers.ModelSerializer):
+    """Serialize User model"""
+
     class Meta:
         model = User
         fields = (
@@ -18,6 +20,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         }
 
     def create(self, validated_data):
+        """The function which check validate of data and create user"""
         user = User.objects.create_user(
             validated_data["username"],
             password=validated_data["password"],

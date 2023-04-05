@@ -3,12 +3,14 @@ from rest_framework import serializers
 from .models import Wallet
 
 
-class UserPublicSerializer(serializers.Serializer):
-    username = serializers.CharField(read_only=True)
+# class UserPublicSerializer(serializers.Serializer):
+#     username = serializers.CharField(read_only=True)
 
 
 class WalletSerializer(serializers.ModelSerializer):
-    owner = UserPublicSerializer(read_only=True)
+    """Serialize Wallet model"""
+
+    # owner = UserPublicSerializer(read_only=True)
 
     class Meta:
         model = Wallet

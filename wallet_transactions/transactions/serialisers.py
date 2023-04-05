@@ -3,6 +3,8 @@ from .models import Transaction
 
 
 class TransactionSerializer(serializers.ModelSerializer):
+    """Serialize Transaction model"""
+
     class Meta:
         model = Transaction
         fields = [

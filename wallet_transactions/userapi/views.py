@@ -4,9 +4,12 @@ from .serializers import RegisterSerializer, UserSerializer
 
 
 class RegisterApi(generics.GenericAPIView):
+    """Create view for register user with method post"""
+
     serializer_class = RegisterSerializer
 
     def post(self, request, *args, **kwargs):
+        """Method post wich serialithe data check valid and create user"""
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()

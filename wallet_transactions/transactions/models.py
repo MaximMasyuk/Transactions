@@ -6,6 +6,8 @@ from wallets.models import Wallet
 
 
 class Transaction(models.Model):
+    """Describe table Transaction"""
+
     sender = models.ForeignKey(Wallet, on_delete=models.CASCADE, related_name="sender")
     receiver = models.ForeignKey(
         Wallet, on_delete=models.CASCADE, related_name="receiver"
@@ -16,6 +18,7 @@ class Transaction(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self) -> str:
+        """Returns String representation for Transaction"""
         return (
             f"sender: {self.sender}, recever: {self.receiver},"
             f"transfer amount: {self.transfer_amount}"

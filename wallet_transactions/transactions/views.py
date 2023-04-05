@@ -13,6 +13,8 @@ from .permission import IsOwnerTransaction
 
 
 class TransactionDetailAPIView(generics.RetrieveAPIView):
+    """Create view with detail for certain Transaction"""
+
     queryset = Transaction.objects.all()
     serializer_class = TransactionSerializer
     permission_classes = (IsOwnerTransaction,)
@@ -20,6 +22,7 @@ class TransactionDetailAPIView(generics.RetrieveAPIView):
 
 @api_view(("GET",))
 def transaction_list(request):
+    """Create view list for all Transaction"""
     transaction = Transaction.objects.filter(
         Q(sender__owner=request.user.id) | Q(receiver__owner=request.user.id)
     )
@@ -31,6 +34,7 @@ def transaction_list(request):
 
 @api_view(("GET",))
 def transaction_list_for_name(request, name_of_wallet: str):
+    """Create view list for all transaction whose wallet number is name_of_wallet"""
     transaction = Transaction.objects.filter(
         Q(sender__owner=request.user.id) | Q(receiver__owner=request.user.id)
     ).filter(Q(sender__name=name_of_wallet) | Q(receiver__name=name_of_wallet))
