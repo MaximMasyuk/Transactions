@@ -55,6 +55,7 @@ def transaction_list_for_name(request, name_of_wallet: str):
 
 @api_view(["POST"])
 def transaction_create(request):
+    """Create view for transaction which create transaction and chenge the balance in wallets"""
     user = request.user
     serializer = TransactionSerializer(data=request.data)
     serializer.is_valid()
