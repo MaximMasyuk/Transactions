@@ -1,10 +1,14 @@
+import decimal
 from django.db.models import Q
 
+from rest_framework import views, permissions
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 
 from .models import Transaction
 from .serialisers import TransactionSerializer
+
+from wallets.models import Wallet
 
 
 @api_view(("GET", "DELETE"))
@@ -51,4 +55,46 @@ def transaction_list_for_name(request, name_of_wallet: str):
 
 @api_view(["POST"])
 def transaction_create(request):
-    ...
+    user = request.user
+    serializer = TransactionSerializer(data=request.data)
+    serializer.is_valid()
+    # print(serializer.validated_data.get("sender__name"))
+    try:
+        wallet_sender = Wallet.objects.filter(owner__username=user).get(
+            name=serializer.validated_data.get("sender")
+        )
+
+        wallet_recever = Wallet.objects.get(
+            name=serializer.validated_data.get("receiver")
+        )
+
+    except Wallet.DoesNotExist:
+        return Response({"error": "the wallet does not exist"})
+
+    if wallet_sender.owner == wallet_recever.owner:
+        com = 0.00
+        transfer = serializer.validated_data.get("transfer_amount")
+
+    else:
+        com = serializer.validated_data.get("transfer_amount") * decimal.Decimal(0.1)
+        transfer = serializer.validated_data.get("transfer_amount") - com
+
+    print(wallet_sender.balance - transfer)
+    wallet_sender.balance = wallet_sender.balance - transfer
+    wallet_recever.balance = wallet_recever.balance + transfer
+
+    wallet_sender.save(update_fields=["balance"])
+    wallet_recever.save(update_fields=["balance"])
+
+    # serializer.save(transfer_amount=transfer, status="PAID", commission=com)
+    return Response({"error": "zzzzz"})
+
+
+class TransactionView(views.APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        serializer = TransactionSerializer(data=request.data)
+
+        serializer.is_valid(raise_exception=True)
+        print(serializer.data)

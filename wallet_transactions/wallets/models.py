@@ -1,6 +1,6 @@
 from django.db import models
 from django.dispatch import receiver
-from django.db.models.signals import pre_save
+from django.db.models.signals import post_save
 from django.conf import settings
 
 
@@ -29,12 +29,23 @@ class Wallet(models.Model):
         return f"{self.name}"
 
 
-@receiver(pre_save, sender=Wallet)
-def add_balance_wallet(sender, instance, *args, **kwargs):
-    """Pre-save method when wallet is created check the currency
-    and add the balance for new user"""
-    if not instance.balance:
+# @receiver(pre_save, sender=Wallet)
+# def add_balance_wallet(sender, instance, *args, **kwargs):
+#     """Pre-save method when wallet is created check the currency
+#     and add the balance for new user"""
+#     if not instance.balance:
+#         if instance.currency == "RUB":
+#             instance.balance = FORNEWWALLETRUB100
+#         else:
+#             instance.balance = FORNEWWALLETUSDEUR3
+
+
+@receiver(post_save, sender=Wallet)
+def add_balance_wallet(sender, instance, created, *args, **kwargs):
+    if created:
         if instance.currency == "RUB":
             instance.balance = FORNEWWALLETRUB100
         else:
             instance.balance = FORNEWWALLETUSDEUR3
+
+        instance.save()

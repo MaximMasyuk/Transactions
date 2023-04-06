@@ -20,9 +20,15 @@ class Transaction(models.Model):
         Wallet, on_delete=models.CASCADE, related_name="receiver"
     )
     transfer_amount = models.DecimalField(max_digits=10, decimal_places=2)
-    commission = models.DecimalField(max_digits=10, decimal_places=2, editable=False)
-    status = models.CharField(choices=STATUS_TYPE, max_length=25, editable=False)
-    timestamp = models.DateTimeField(auto_now_add=True, editable=False)
+    commission = models.DecimalField(
+        max_digits=10, decimal_places=2, editable=False, null=True, blank=True
+    )
+    status = models.CharField(
+        choices=STATUS_TYPE, max_length=25, editable=False, null=True, blank=True
+    )
+    timestamp = models.DateTimeField(
+        auto_now_add=True, editable=False, null=True, blank=True
+    )
 
     def __str__(self) -> str:
         """Returns String representation for Transaction"""
