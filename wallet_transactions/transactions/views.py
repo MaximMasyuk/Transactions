@@ -47,3 +47,8 @@ def transaction_list_for_name(request, name_of_wallet: str):
     if not transaction:
         return Response({"error": "transaction does not exist"})
     return Response(serializer.data)
+
+
+@api_view(["POST"])
+def transaction_create(request):
+    ...
