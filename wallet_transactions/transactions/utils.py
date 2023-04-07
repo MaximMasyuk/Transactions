@@ -7,6 +7,12 @@ NO_COMMISSION = 0
 BANK_COMMISSION = 0.1
 
 
+def check_currency(wallet_sender, wallet_recever, serializer, com):
+    if wallet_sender.currency != wallet_recever.currency:
+        serializer.save(status=FAILED, commission=com)
+        return Response({"ERROR": "Transacrion faild"})
+
+
 def count_commission(user, wallet_recever):
     """Get commission"""
 
