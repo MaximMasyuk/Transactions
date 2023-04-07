@@ -5,7 +5,7 @@ from wallets.models import Wallet
 
 PAID = "PAID"
 FAILED = "FAILED"
-ZEROCOMMISION = 0.00
+ZERO_COMMISION = 0.00
 
 STATUS_TYPE = [
     (PAID, "PAID"),

@@ -1,12 +1,12 @@
-import decimal
 from django.db.models import Q
 
-from rest_framework import views, permissions
+
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 
-from .models import Transaction, ZEROCOMMISION, PAID, FAILED
+from .models import Transaction, PAID, FAILED
 from .serialisers import TransactionSerializer
+from .utils import count_commission, check_low_balance, seve_wallet
 
 from wallets.models import Wallet
 
@@ -59,50 +59,25 @@ def transaction_create(request):
     user = request.user
     serializer = TransactionSerializer(data=request.data)
     serializer.is_valid()
-    try:
-        wallet_sender = Wallet.objects.filter(owner__username=user).get(
-            name=serializer.validated_data.get("sender")
-        )
-        wallet_recever = Wallet.objects.get(
-            name=serializer.validated_data.get("receiver")
-        )
+    if not serializer.is_valid():
+        return Response({"error": "faild"})
 
-    except Wallet.DoesNotExist:
-        return Response({"error": "the wallet does not exist"})
+    wallet_sender = Wallet.objects.filter(owner__username=user).get(
+        name=serializer.validated_data.get("sender")
+    )
+    wallet_recever = Wallet.objects.get(name=serializer.validated_data.get("receiver"))
 
-    if wallet_sender.owner == wallet_recever.owner:
-        com = ZEROCOMMISION
-        transfer = serializer.validated_data.get("transfer_amount")
-
-    else:
-        com = serializer.validated_data.get("transfer_amount") * decimal.Decimal(0.1)
-        transfer = serializer.validated_data.get("transfer_amount") - com
+    com, transfer, sender_balanse = count_commission(
+        wallet_sender, wallet_recever, serializer
+    )
 
     if wallet_sender.currency != wallet_recever.currency:
         serializer.save(status=FAILED, commission=com)
         return Response({"ERROR": "Transacrion faild"})
 
-    sender_balanse = wallet_sender.balance - transfer
+    check_low_balance(sender_balanse, serializer, com)
 
-    if sender_balanse > 0:
-        serializer.save(status=FAILED, commission=com)
-        return Response({"ERROR": "Transacrion faild"})
-
-    wallet_sender.balance = sender_balanse
-    wallet_recever.balance = wallet_recever.balance + transfer
-
-    wallet_sender.save(update_fields=["balance"])
-    wallet_recever.save(update_fields=["balance"])
+    seve_wallet(wallet_sender, sender_balanse, wallet_recever, transfer)
 
     serializer.save(transfer_amount=transfer, status=PAID, commission=com)
     return Response(serializer.data)
-
-
-class TransactionView(views.APIView):
-    permission_classes = [permissions.IsAuthenticated]
-
-    def post(self, request):
-        serializer = TransactionSerializer(data=request.data)
-
-        serializer.is_valid(raise_exception=True)
-        print(serializer.data)
