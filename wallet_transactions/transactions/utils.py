@@ -11,6 +11,7 @@ def count_commission(user, wallet_recever):
     """Get commission"""
 
     commission = NO_COMMISSION if wallet_recever.owner == user else BANK_COMMISSION
+
     return commission
 
 

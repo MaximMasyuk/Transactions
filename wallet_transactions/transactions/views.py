@@ -66,7 +66,7 @@ def transaction_create(request):
     )
     wallet_recever = Wallet.objects.get(name=serializer.validated_data.get("receiver"))
 
-    commission = count_commission
+    commission = count_commission(user, wallet_recever)
     com, transfer, sender_balanse = count_transfer(
         wallet_sender, serializer, commission
     )
