@@ -47,13 +47,15 @@ def add_balance_wallet(sender, instance, created, *args, **kwargs):
 def add_name_wallet(sender, instance, created, *args, **kwargs):
     if created:
         global CHECK, name
-        while CHECK:
-            name = [
-                random.choice(string.ascii_uppercase + string.digits) for i in range(8)
-            ]
-            check_name = Wallet.objects.filter(name=name).count()
-            if check_name == 0:
-                CHECK = False
-        instance.name = "".join(name)
+        if not instance.name:
+            while CHECK:
+                name = [
+                    random.choice(string.ascii_uppercase + string.digits)
+                    for i in range(8)
+                ]
+                check_name = Wallet.objects.filter(name=name).count()
+                if check_name == 0:
+                    CHECK = False
+            instance.name = "".join(name)
 
         instance.save()
