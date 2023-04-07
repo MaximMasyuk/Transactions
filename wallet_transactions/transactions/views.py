@@ -6,8 +6,7 @@ from rest_framework.decorators import api_view
 
 from .models import Transaction, PAID, FAILED
 from .serialisers import TransactionSerializer
-from .utils import count_commission, check_low_balance, seve_wallet
-
+from .utils import count_commission, check_low_balance, seve_wallet, count_transfer
 from wallets.models import Wallet
 
 
@@ -67,8 +66,9 @@ def transaction_create(request):
     )
     wallet_recever = Wallet.objects.get(name=serializer.validated_data.get("receiver"))
 
-    com, transfer, sender_balanse = count_commission(
-        wallet_sender, wallet_recever, serializer
+    commission = count_commission
+    com, transfer, sender_balanse = count_transfer(
+        wallet_sender, serializer, commission
     )
 
     if wallet_sender.currency != wallet_recever.currency:
