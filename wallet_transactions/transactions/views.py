@@ -1,10 +1,19 @@
 from django.db.models import Q
 
+
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 
-from .models import Transaction
+from .models import Transaction, PAID
 from .serialisers import TransactionSerializer
+from .utils import (
+    count_commission,
+    check_low_balance,
+    seve_wallet,
+    count_transfer,
+    check_currency,
+)
+from wallets.models import Wallet
 
 
 @api_view(("GET", "DELETE"))
@@ -46,4 +55,31 @@ def transaction_list_for_name(request, name_of_wallet: str):
     serializer = TransactionSerializer(transaction, many=True)
     if not transaction:
         return Response({"error": "transaction does not exist"})
+    return Response(serializer.data)
+
+
+@api_view(["POST"])
+def transaction_create(request):
+    """Create view for transaction which create transaction and chenge the balance in wallets"""
+    user = request.user
+    serializer = TransactionSerializer(data=request.data)
+    serializer.is_valid()
+    if not serializer.is_valid():
+        return Response({"error": "faild"})
+
+    wallet_sender = Wallet.objects.filter(owner__username=user).get(
+        name=serializer.validated_data.get("sender")
+    )
+    wallet_recever = Wallet.objects.get(name=serializer.validated_data.get("receiver"))
+
+    commission = count_commission(user, wallet_recever)
+    com, transfer, sender_balanse = count_transfer(
+        wallet_sender, serializer, commission
+    )
+    check_currency(wallet_sender, wallet_recever, serializer, com)
+    check_low_balance(sender_balanse, serializer, com)
+
+    seve_wallet(wallet_sender, sender_balanse, wallet_recever, transfer)
+
+    serializer.save(transfer_amount=transfer, status=PAID, commission=com)
     return Response(serializer.data)

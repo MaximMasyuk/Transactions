@@ -1,15 +1,18 @@
 from django.db import models
 from django.dispatch import receiver
-from django.db.models.signals import pre_save
+from django.db.models.signals import post_save
 from django.conf import settings
+import random
+import string
 
 
 from .list_for_model import TYPEOFWALLET, CURRENCYS
 
 User = settings.AUTH_USER_MODEL
-COUNTOFWALLETYOUCANCREAT = 5
-FORNEWWALLETRUB100 = 100
-FORNEWWALLETUSDEUR3 = 3
+COUNT_OF_WALLET_YOU_CAN_CREAT = 5
+FOR_NEW_WALLET_RUB_100 = 100
+FOR_NEW_WALLET_USD_EUR_3 = 3
+CHECK = True
 
 
 class Wallet(models.Model):
@@ -29,12 +32,28 @@ class Wallet(models.Model):
         return f"{self.name}"
 
 
-@receiver(pre_save, sender=Wallet)
-def add_balance_wallet(sender, instance, *args, **kwargs):
-    """Pre-save method when wallet is created check the currency
-    and add the balance for new user"""
-    if not instance.balance:
+@receiver(post_save, sender=Wallet)
+def add_balance_wallet(sender, instance, created, *args, **kwargs):
+    if created:
         if instance.currency == "RUB":
-            instance.balance = FORNEWWALLETRUB100
+            instance.balance = FOR_NEW_WALLET_RUB_100
         else:
-            instance.balance = FORNEWWALLETUSDEUR3
+            instance.balance = FOR_NEW_WALLET_USD_EUR_3
+
+        instance.save()
+
+
+@receiver(post_save, sender=Wallet)
+def add_name_wallet(sender, instance, created, *args, **kwargs):
+    if created:
+        global CHECK, name
+        while CHECK:
+            name = [
+                random.choice(string.ascii_uppercase + string.digits) for i in range(8)
+            ]
+            check_name = Wallet.objects.filter(name=name).count()
+            if check_name == 0:
+                CHECK = False
+        instance.name = "".join(name)
+
+        instance.save()
