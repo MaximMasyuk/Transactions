@@ -26,7 +26,7 @@ def transaction_detail_delete(request, pk: int):
         return Response(serializer.data)
     elif request.method == "DELETE":
         transaction.delete()
-        return Response({"error": "transaction does not exist"})
+        return Response({"Status": "transaction was delete"})
 
 
 @api_view(("GET",))
