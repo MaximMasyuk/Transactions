@@ -2,13 +2,28 @@ from .models import ZERO_COMMISION, FAILED
 import decimal
 from rest_framework.response import Response
 
-ZERO_BALANCE = 0.00
+NO_COMMISSION = 0
 BANK_COMMISSION = 0.1
 
 
-def count_commission(wallet_sender, wallet_recever, serializer):
-    """Count commssion for Transaction"""
-    if wallet_sender.owner == wallet_recever.owner:
+def check_currency(wallet_sender, wallet_recever, serializer, com):
+    if wallet_sender.currency != wallet_recever.currency:
+        serializer.save(status=FAILED, commission=com)
+        return Response({"ERROR": "Transacrion faild"})
+
+
+def count_commission(user, wallet_recever):
+    """Get commission"""
+
+    commission = NO_COMMISSION if wallet_recever.owner == user else BANK_COMMISSION
+
+    return commission
+
+
+def count_transfer(wallet_sender, serializer, commission):
+    """Count transfer attribute"""
+    if commission == NO_COMMISSION:
+
         commission = ZERO_COMMISION
         transfer = serializer.validated_data.get("transfer_amount")
 

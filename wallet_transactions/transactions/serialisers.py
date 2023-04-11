@@ -23,13 +23,8 @@ class TransactionSerializer(serializers.ModelSerializer):
         request = self.context.get("request")
         user = request.user
         try:
-            sender_wallet = Wallet.objects.filter(owner__username=user).get(
-                name="sender"
-            )
-            receiver_wallet = Wallet.objects.get(name="receiver")
+            Wallet.objects.filter(owner__username=user).get(name="sender")
+            Wallet.objects.get(name="receiver")
         except Wallet.DoesNotExist:
             raise serializers.ValidationError(f"{value} the wallet does not exist")
-
-        if sender_wallet.currency != receiver_wallet.currency:
-            raise serializers.ValidationError("Currency is not normal")
         return value
