@@ -10,7 +10,10 @@ from django.contrib.auth.models import User
 
 
 class WalletTest(APITestCase):
+    """Test class for Wallet"""
+
     def setUp(self):
+        """Create the data for test database"""
         User.objects.create(username="admin", password="qwerty512228")
         User.objects.create(username="mmas", password="qwerty512228")
 
@@ -23,11 +26,13 @@ class WalletTest(APITestCase):
 
     @property
     def bearer_token(self):
+        """Create the token for user"""
         user = User.objects.get(username="admin")
         refresh = RefreshToken.for_user(user)
         return {"HTTP_AUTHORIZATION": f"Bearer {refresh.access_token}"}
 
     def test_get_list_wallet(self):
+        """Test the view wallet_list"""
         url = reverse("wallet_list")
         response = self.client.get(url, **self.bearer_token)
         response1 = self.client.get(url)
@@ -36,6 +41,7 @@ class WalletTest(APITestCase):
         self.assertEqual(len(response1.data), 0)
 
     def test_post_create_wallet(self):
+        """Test the view wallet_create"""
         url = reverse("wallet_create")
         data = {
             "type_of_wallet": "VISA",
@@ -47,6 +53,7 @@ class WalletTest(APITestCase):
         self.assertEqual(Wallet.objects.count(), 2)
 
     def test_post_delete_wallet(self):
+        """Test the view wallet_detail_delete"""
         url = reverse("wallet_detail_delete", args=["AAQQPD8Z"])
         response1 = self.client.delete(url)
         self.assertEqual(response1.status_code, status.HTTP_200_OK)
@@ -56,6 +63,7 @@ class WalletTest(APITestCase):
         self.assertEqual(Wallet.objects.count(), 0)
 
     def test_get_detail_wallet(self):
+        """Test the view wallet_detail_delete"""
         url = reverse("wallet_detail_delete", args=["AAQQPD8Z"])
         response = self.client.get(url, **self.bearer_token)
         self.assertEqual(

@@ -11,7 +11,10 @@ from .models import Transaction
 
 
 class TransactionTest(APITestCase):
+    """Test class for Transaction"""
+
     def setUp(self) -> None:
+        """Create the data for test database"""
         User.objects.create(username="admin", password="qwerty512228")
         User.objects.create(username="mmas", password="qwerty512228")
 
@@ -58,11 +61,13 @@ class TransactionTest(APITestCase):
 
     @property
     def bearer_token(self):
+        """Create the token for user"""
         user = User.objects.get(username="admin")
         refresh = RefreshToken.for_user(user)
         return {"HTTP_AUTHORIZATION": f"Bearer {refresh.access_token}"}
 
     def test_get_list_transaction(self):
+        """Test the view transaction_list"""
         url = reverse("transactions_list")
         response = self.client.get(url, **self.bearer_token)
         response1 = self.client.get(url)
@@ -74,6 +79,7 @@ class TransactionTest(APITestCase):
         self.assertEqual(response1.data, {"error": "transaction does not exist"})
 
     def test_get_list_for_name_transaction(self):
+        """Test the view transaction_list_for_name"""
         url = reverse("transaction_list_for_name", args=["AAQQPD8Z"])
         url1 = reverse("transaction_list_for_name", args=["RFED12ED"])
         response = self.client.get(url, **self.bearer_token)
@@ -86,6 +92,7 @@ class TransactionTest(APITestCase):
         self.assertEqual(response1.data, {"error": "transaction does not exist"})
 
     def test_get_delete_transaction(self):
+        """Test the view transaction_detail_delete"""
         url = reverse("transactions_detail_delete", args=["5"])
         url1 = reverse("transactions_detail_delete", args=["7"])
 
@@ -97,6 +104,7 @@ class TransactionTest(APITestCase):
         self.assertEqual(response2.data, {"error": "transaction does not exist"})
 
     def test_get_detail_transaction(self):
+        """Test the view transaction_detail_delete"""
         url = reverse("transactions_detail_delete", args=[5])
         response = self.client.get(url, **self.bearer_token)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -131,6 +139,7 @@ class TransactionTest(APITestCase):
         )
 
     def test_post_create_transaction(self):
+        """test the view transaction_create"""
         url = reverse("transaction_create")
         data = {"sender": 1, "receiver": 2, "transfer_amount": 10.0}
 

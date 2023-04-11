@@ -19,6 +19,7 @@ class TransactionSerializer(serializers.ModelSerializer):
         ]
 
     def validate_title(self, value):
+        """Verifies valid transaction data"""
         request = self.context.get("request")
         user = request.user
         try:
@@ -27,8 +28,8 @@ class TransactionSerializer(serializers.ModelSerializer):
             )
             receiver_wallet = Wallet.objects.get(name="receiver")
         except Wallet.DoesNotExist:
-            raise serializers.ValidationError(f"{value} the wallen does not exist")
+            raise serializers.ValidationError(f"{value} the wallet does not exist")
 
         if sender_wallet.currency != receiver_wallet.currency:
-            raise serializers.ValidationError("currency is not normal")
+            raise serializers.ValidationError("Currency is not normal")
         return value

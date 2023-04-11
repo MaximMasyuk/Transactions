@@ -34,6 +34,7 @@ class Wallet(models.Model):
 
 @receiver(post_save, sender=Wallet)
 def add_balance_wallet(sender, instance, created, *args, **kwargs):
+    """Add balance for wallet when wallet create"""
     if created:
         if instance.currency == "RUB":
             instance.balance = FOR_NEW_WALLET_RUB_100
@@ -45,6 +46,7 @@ def add_balance_wallet(sender, instance, created, *args, **kwargs):
 
 @receiver(post_save, sender=Wallet)
 def add_name_wallet(sender, instance, created, *args, **kwargs):
+    """Add name for wallet when wallet create"""
     if created:
         global CHECK, name
         if not instance.name:

@@ -3,16 +3,18 @@ import decimal
 from rest_framework.response import Response
 
 ZERO_BALANCE = 0.00
+BANK_COMMISSION = 0.1
 
 
 def count_commission(wallet_sender, wallet_recever, serializer):
+    """Count commssion for Transaction"""
     if wallet_sender.owner == wallet_recever.owner:
         commission = ZERO_COMMISION
         transfer = serializer.validated_data.get("transfer_amount")
 
     else:
         commission = serializer.validated_data.get("transfer_amount") * decimal.Decimal(
-            0.1
+            BANK_COMMISSION
         )
         transfer = serializer.validated_data.get("transfer_amount") - commission
 
@@ -21,12 +23,14 @@ def count_commission(wallet_sender, wallet_recever, serializer):
 
 
 def check_low_balance(sender_balanse, serializer, com):
+    """Check the balanse wallet"""
     if sender_balanse < ZERO_BALANCE:
         serializer.save(status=FAILED, commission=com)
-        return Response({"ERROR": "Transacrion faild"})
+        return Response({"ERROR": "Transaction faild"})
 
 
 def seve_wallet(wallet_sender, sender_balanse, wallet_recever, transfer):
+    """The function for save Wallet"""
     wallet_sender.balance = sender_balanse
     wallet_recever.balance = wallet_recever.balance + transfer
 

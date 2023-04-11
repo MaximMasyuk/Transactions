@@ -55,12 +55,12 @@ def transaction_list_for_name(request, name_of_wallet: str):
 
 @api_view(["POST"])
 def transaction_create(request):
-    """Create view for transaction which create transaction and chenge the balance in wallets"""
+    """Create view for transaction which create transaction and change the balance in wallets"""
     user = request.user
     serializer = TransactionSerializer(data=request.data)
     serializer.is_valid()
     if not serializer.is_valid():
-        return Response({"error": "faild"})
+        return Response({"error": "transaction does not exist"})
 
     wallet_sender = Wallet.objects.filter(owner__username=user).get(
         name=serializer.validated_data.get("sender")

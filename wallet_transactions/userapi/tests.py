@@ -1,5 +1,5 @@
 from rest_framework.test import APITestCase
-from rest_framework_simplejwt.tokens import RefreshToken
+
 from rest_framework import status
 
 
@@ -8,16 +8,14 @@ from django.urls import reverse
 
 
 class UserTest(APITestCase):
+    """Test class for Transaction"""
+
     def setUp(self):
+        """Create the data for test database"""
         User.objects.create(username="admin", password="qwerty512228")
 
-    @property
-    def bearer_token(self):
-        user = User.objects.get(username="admin")
-        refresh = RefreshToken.for_user(user)
-        return {"HTTP_AUTHORIZATION": f"Bearer {refresh.access_token}"}
-
     def test__post_register_user(self):
+        """test the view TokenObtainPairView"""
         url = reverse("token_register")
         data = {
             "username": "mmmas",
