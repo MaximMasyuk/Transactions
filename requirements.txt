@@ -1,8 +1,0 @@
-flake8
-black
-pre-commit
-djangorestframework
-Django
-psycopg2-binary
-django-environ
-djangorestframework-simplejwt
