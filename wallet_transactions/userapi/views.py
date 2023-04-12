@@ -9,7 +9,7 @@ class RegisterApi(generics.GenericAPIView):
     serializer_class = RegisterSerializer
 
     def post(self, request, *args, **kwargs):
-        """Method post wich serialithe data check valid and create user"""
+        """Method post with serialized data check valid and create user"""
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()

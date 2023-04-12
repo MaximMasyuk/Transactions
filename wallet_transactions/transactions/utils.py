@@ -23,7 +23,7 @@ def count_commission(wallet_sender, wallet_recever, serializer):
 
 
 def check_low_balance(sender_balanse, serializer, com):
-    """Check the balanse wallet"""
+    """Check the balance wallet"""
     if sender_balanse < ZERO_BALANCE:
         serializer.save(status=FAILED, commission=com)
         return Response({"ERROR": "Transaction faild"})
