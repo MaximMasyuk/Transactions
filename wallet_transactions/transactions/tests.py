@@ -74,9 +74,7 @@ class TransactionTest(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
-
-        self.assertEqual(response1.status_code, status.HTTP_200_OK)
-        self.assertEqual(response1.data, {"error": "transaction does not exist"})
+        self.assertEqual(response1.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_get_list_for_name_transaction(self):
         """Test the view transaction_list_for_name"""
@@ -101,7 +99,7 @@ class TransactionTest(APITestCase):
         response2 = self.client.delete(url)
         self.assertEqual(response.data, {"Status": "transaction was delete"})
         self.assertEqual(response1.data, {"error": "transaction does not exist"})
-        self.assertEqual(response2.data, {"error": "transaction does not exist"})
+        self.assertEqual(response2.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_get_detail_transaction(self):
         """Test the view transaction_detail_delete"""

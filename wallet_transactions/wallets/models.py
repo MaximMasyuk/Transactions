@@ -12,7 +12,6 @@ User = settings.AUTH_USER_MODEL
 COUNT_OF_WALLET_YOU_CAN_CREAT = 5
 FOR_NEW_WALLET_RUB_100 = 100
 FOR_NEW_WALLET_USD_EUR_3 = 3
-CHECK = True
 
 
 class Wallet(models.Model):
@@ -48,8 +47,9 @@ def add_balance_wallet(sender, instance, created, *args, **kwargs):
 def add_name_wallet(sender, instance, created, *args, **kwargs):
     """Add name for wallet when wallet create"""
     if created:
-        global CHECK, name
         if not instance.name:
+            CHECK = True
+            name = None
             while CHECK:
                 name = [
                     random.choice(string.ascii_uppercase + string.digits)

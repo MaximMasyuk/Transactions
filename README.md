@@ -5,6 +5,7 @@
 * [General info](#general-info)
 * [Technologies](#technologies)
 * [Setup](#setup)
+* [Test](#test)
 
 ## General info
 Simple Transactions appi create with DRF and postgresql
@@ -23,3 +24,7 @@ Project is created with:
 6.In file sttings put your db settings
 7.After that you need to run migrations with command 'python manage.py makemigrations' and 'python manage.py migrate'
 8.And in the end you need to run command 'python manage.py runserver
+
+
+## Test
+If you want to run test, you need to start command 'python manage.py test'

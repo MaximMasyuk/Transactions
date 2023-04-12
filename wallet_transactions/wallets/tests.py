@@ -38,7 +38,7 @@ class WalletTest(APITestCase):
         response1 = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
-        self.assertEqual(len(response1.data), 0)
+        self.assertEqual(response1.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_post_create_wallet(self):
         """Test the view wallet_create"""
@@ -56,14 +56,15 @@ class WalletTest(APITestCase):
         """Test the view wallet_detail_delete"""
         url = reverse("wallet_detail_delete", args=["AAQQPD8Z"])
         response1 = self.client.delete(url)
-        self.assertEqual(response1.status_code, status.HTTP_200_OK)
-        self.assertEqual(Wallet.objects.count(), 1)
+        self.assertEqual(response1.status_code, status.HTTP_401_UNAUTHORIZED)
+
         response = self.client.delete(url, **self.bearer_token)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(Wallet.objects.count(), 0)
 
     def test_get_detail_wallet(self):
         """Test the view wallet_detail_delete"""
+        user = User.objects.get(username="admin")
         url = reverse("wallet_detail_delete", args=["AAQQPD8Z"])
         response = self.client.get(url, **self.bearer_token)
         self.assertEqual(
@@ -74,4 +75,4 @@ class WalletTest(APITestCase):
         self.assertEqual(response.data["type_of_wallet"], "VISA")
         self.assertEqual(response.data["currency"], "USD")
         self.assertEqual(response.data["balance"], "3.00")
-        self.assertEqual(response.data["owner"], 13)
+        self.assertEqual(response.data["owner"], user.pk)
