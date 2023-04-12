@@ -2,7 +2,8 @@ from django.db.models import Q
 
 
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 
 from .models import Transaction, PAID
 from .serialisers import TransactionSerializer
@@ -17,6 +18,7 @@ from wallets.models import Wallet
 
 
 @api_view(("GET", "DELETE"))
+@permission_classes([IsAuthenticated])
 def transaction_detail_delete(request, pk: int):
     """Create view list for all transaction whose transaction pk is pk"""
 
@@ -35,6 +37,7 @@ def transaction_detail_delete(request, pk: int):
 
 
 @api_view(("GET",))
+@permission_classes([IsAuthenticated])
 def transaction_list(request):
     """Create view list for all Transaction"""
     transaction = Transaction.objects.filter(
@@ -47,6 +50,7 @@ def transaction_list(request):
 
 
 @api_view(("GET",))
+@permission_classes([IsAuthenticated])
 def transaction_list_for_name(request, name_of_wallet: str):
     """Create view list for all transaction whose wallet number is name_of_wallet"""
     transaction = Transaction.objects.filter(
@@ -59,6 +63,7 @@ def transaction_list_for_name(request, name_of_wallet: str):
 
 
 @api_view(["POST"])
+@permission_classes([IsAuthenticated])
 def transaction_create(request):
     """Create view for transaction which create transaction and change the balance in wallets"""
     user = request.user
