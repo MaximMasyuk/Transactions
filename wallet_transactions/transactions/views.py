@@ -4,10 +4,15 @@ from django.db.models import Q
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 
-from .models import Transaction, PAID, FAILED
+from .models import Transaction, PAID
 from .serialisers import TransactionSerializer
-from .utils import count_commission, check_low_balance, seve_wallet
-
+from .utils import (
+    count_commission,
+    check_low_balance,
+    seve_wallet,
+    count_transfer,
+    check_currency,
+)
 from wallets.models import Wallet
 
 
@@ -67,14 +72,11 @@ def transaction_create(request):
     )
     wallet_recever = Wallet.objects.get(name=serializer.validated_data.get("receiver"))
 
-    com, transfer, sender_balanse = count_commission(
-        wallet_sender, wallet_recever, serializer
+    commission = count_commission(user, wallet_recever)
+    com, transfer, sender_balanse = count_transfer(
+        wallet_sender, serializer, commission
     )
-
-    if wallet_sender.currency != wallet_recever.currency:
-        serializer.save(status=FAILED, commission=com)
-        return Response({"ERROR": "Transacrion faild"})
-
+    check_currency(wallet_sender, wallet_recever, serializer, com)
     check_low_balance(sender_balanse, serializer, com)
 
     seve_wallet(wallet_sender, sender_balanse, wallet_recever, transfer)
