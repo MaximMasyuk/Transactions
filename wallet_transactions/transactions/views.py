@@ -70,16 +70,16 @@ def transaction_create(request):
     wallet_sender = Wallet.objects.filter(owner__username=user).get(
         name=serializer.validated_data.get("sender")
     )
-    wallet_recever = Wallet.objects.get(name=serializer.validated_data.get("receiver"))
+    wallet_receiver = Wallet.objects.get(name=serializer.validated_data.get("receiver"))
 
-    commission = count_commission(user, wallet_recever)
+    commission = count_commission(user, wallet_receiver)
     com, transfer, sender_balanse = count_transfer(
         wallet_sender, serializer, commission
     )
-    check_currency(wallet_sender, wallet_recever, serializer, com)
+    check_currency(wallet_sender, wallet_receiver, serializer, com)
     check_low_balance(sender_balanse, serializer, com)
 
-    seve_wallet(wallet_sender, sender_balanse, wallet_recever, transfer)
+    seve_wallet(wallet_sender, sender_balanse, wallet_receiver, transfer)
 
     serializer.save(transfer_amount=transfer, status=PAID, commission=com)
     return Response(serializer.data)

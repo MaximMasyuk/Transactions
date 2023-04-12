@@ -22,6 +22,7 @@ class WalletSerializer(serializers.ModelSerializer):
         ]
 
         def validate(self, attrs):
+            """Check valid data"""
             balance = attrs.get("balance")
             if balance < decimal.Decimal(0.0):
                 raise validators.ValidationError(
