@@ -10,7 +10,7 @@ def check_currency(wallet_sender, wallet_receiver, serializer, com):
     """Check currency for receiver and sender"""
     if wallet_sender.currency != wallet_receiver.currency:
         serializer.save(status=FAILED, commission=com)
-        return Response({"ERROR": "Transacrion faild"})
+        return Response({"ERROR": "Transaction faild"})
 
 
 def count_commission(user, wallet_receiver):
