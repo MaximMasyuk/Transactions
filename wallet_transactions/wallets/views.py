@@ -1,5 +1,6 @@
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 
 from .models import Wallet, COUNT_OF_WALLET_YOU_CAN_CREAT
@@ -7,6 +8,7 @@ from .serializers import WalletSerializer
 
 
 @api_view(("GET",))
+@permission_classes([IsAuthenticated])
 def wallet_list(request):
     """Create view list for all Wallet"""
     wallet = Wallet.objects.filter(owner__username=request.user)
@@ -15,6 +17,7 @@ def wallet_list(request):
 
 
 @api_view(["POST"])
+@permission_classes([IsAuthenticated])
 def wallet_create(request):
     """Create view create for Wallet"""
     serializer = WalletSerializer(data=request.data)
@@ -29,6 +32,7 @@ def wallet_create(request):
 
 
 @api_view(("GET", "DELETE"))
+@permission_classes([IsAuthenticated])
 def wallet_detail_delete(request, name_of_wallet: str):
     """Create view list for all transaction whose wallet number is name_of_wallet"""
 

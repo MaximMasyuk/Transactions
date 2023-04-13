@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 
 
 class RegisterSerializer(serializers.ModelSerializer):
-    """Serialize User model"""
+    """Serialize User model for register"""
 
     class Meta:
         model = User
@@ -31,6 +31,8 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
+    """Serialize User model"""
+
     class Meta:
         model = User
         fields = "__all__"
